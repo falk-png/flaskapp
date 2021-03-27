@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <table border="2" style="width: 100%" class="table table-bordered">
+        <tr class="success">
+            <td><b>Name:</b></td>
+            <td><b>Link:</b></td>
+            <td><b>Preis:</b></td>
+        </tr>
+        {% for price in prices %}
+        <tr>
+            <td>{{ price.get("name") }}</td>
+            <td><a href='{{ price.get("link") }}'>{{ price.get("link") }}</a></td>
+            <td>{{ price.get("price") }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
