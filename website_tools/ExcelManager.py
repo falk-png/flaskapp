@@ -27,6 +27,8 @@ class ExcelManager():
         links = [price["link"] for price in prices_dic]
         prices = [price["price"] for price in prices_dic]
 
+
+        # Configure Formats
         bold = self.workbook.add_format({
             "bold": True,
         })
