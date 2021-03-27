@@ -20,7 +20,7 @@ def overview():
 
 
     # Sort prices
-    prices = data_mng.sorted_prices()
+    prices = data_mng.sorted_prices(float=False)
 
     return render_template("overview.html", prices=prices)
 

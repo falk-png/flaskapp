@@ -34,7 +34,6 @@ def create_app():
     @scheduler.task('interval', id='update_prices', minutes=30, misfire_grace_time=900)
     def update_prices():
         print("Updating prices.. ", end="")
-        sleep(1)
         
         # Define compareable price variables
         old_prices = data_mng.current_prices
@@ -58,7 +57,7 @@ def create_app():
     @scheduler.task('interval', id='update_excel_file', seconds=4, misfire_grace_time=900)
     def update_excel_file():
         excel_mng = ExcelManager("website/etc_files/prices.xlsx")
-        excel_mng.get_xlsx_file(data_mng.sorted_prices)
+        excel_mng.get_xlsx_file(data_mng.sorted_prices(float=False))
 
         
 
