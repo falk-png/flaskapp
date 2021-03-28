@@ -6,6 +6,7 @@ from price_tools.DataManager import DataManager
 import yaml
 from time import sleep
 from website_tools.ExcelManager import ExcelManager
+from price_tools.tools import price_eur
 
 
 def create_app():
@@ -23,6 +24,11 @@ def create_app():
     app.debug = config["debug_mode"]
 
 
+    # Update excel file
+    excel_mng = ExcelManager("website/etc_files/prices.xlsx")
+    excel_mng.get_xlsx_file(data_mng.sorted_prices(as_float=True))
+
+
     # Configurate scheduler
     scheduler = APScheduler()
     scheduler.api_enabled = True
@@ -31,36 +37,37 @@ def create_app():
 
     # Schedulers:
 
-    @scheduler.task('interval', id='update_prices', minutes=30, misfire_grace_time=900)
+
+    @scheduler.task('interval', id='update_prices', minutes=60, misfire_grace_time=900)
     def update_prices():
         print("Updating prices.. ", end="")
-        
+
+
         # Define compareable price variables
-        old_prices = data_mng.current_prices
-        new_prices = data_mng.get_prices()
+        old_float_prices = data_mng.current_float_prices
+        new_float_prices = data_mng.get_prices(as_float=True)
 
-        # Update prices
-        data_mng.current_prices = new_prices
-        
+
+        # Get old and new prices
+        prices_old = [price["price"] for price in old_float_prices]
+        prices_new = [price["price"] for price in new_float_prices]
+
+
         # Check if something changed
-        prices_changed = old_prices != new_prices
+        prices_changed = prices_old != prices_new
 
-        # Define "changed" text
+
+        # Print if something changed
         if prices_changed:
-            changed_text = f"{old_prices} got {new_prices}"
+            changed_text = f"Something changed!"
         else:
             changed_text = "Nothing changed"
 
         print(changed_text)
 
-
-    @scheduler.task('interval', id='update_excel_file', seconds=4, misfire_grace_time=900)
-    def update_excel_file():
+        # Update excel file
         excel_mng = ExcelManager("website/etc_files/prices.xlsx")
-        excel_mng.get_xlsx_file(data_mng.sorted_prices(float=False))
-
-        
-
+        excel_mng.get_xlsx_file(data_mng.sorted_prices(as_float=True))
 
 
     return app

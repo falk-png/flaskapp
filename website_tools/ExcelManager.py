@@ -14,7 +14,10 @@ class ExcelManager():
 
 
     def close(self):
-        self.workbook.close()
+        try:
+            self.workbook.close()
+        except:
+            print("Please close the excel file!")
 
 
     def write(self, cell, value, options=None):
@@ -26,7 +29,8 @@ class ExcelManager():
         names = [price["name"] for price in prices_dic]
         links = [price["link"] for price in prices_dic]
         prices = [price["price"] for price in prices_dic]
-
+        updated = [price["updated"] for price in prices_dic]
+        
 
         # Configure Formats
         bold = self.workbook.add_format({
@@ -41,6 +45,7 @@ class ExcelManager():
         self.write("A1", "Name:", bold)
         self.write("B1", "Link:", bold)
         self.write("C1", "Preis:", bold)
+        self.write("D1", "Updated:", bold)
 
 
         # Write names
@@ -56,6 +61,11 @@ class ExcelManager():
         # Write prices
         for index, price in enumerate(prices, 2):
             self.write("C" + str(index), price, money)
+        
+
+        # Write update time
+        for index, updated in enumerate(updated, 2):
+            self.write("D" + str(index), updated)
 
 
         # Close / Save file

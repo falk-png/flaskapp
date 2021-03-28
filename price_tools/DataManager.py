@@ -3,6 +3,8 @@ from price_tools.tools import price_eur, price_float
 import xlsxwriter
 from xlsxwriter import Workbook
 import yaml
+from copy import deepcopy
+from datetime import datetime
 
 
 class DataManager():
@@ -14,8 +16,12 @@ class DataManager():
         
         # Create session
         self.session = HTMLSession()
-        self.current_prices = self.get_prices()
+        self.current_prices = self.get_prices(as_float=False)
 
+
+    # Sort prices in dict function (For build in sort function)
+    def __sort_prices_by_dic(self, dic):
+        return price_float(dic["price"])
 
     def get(self, name):
         name = name.upper()
@@ -134,7 +140,7 @@ class DataManager():
             return price
 
 
-    def get_prices(self):
+    def get_prices(self, as_float):
         config = self.config
         fake_data = config["fake_data"]
         
@@ -143,42 +149,50 @@ class DataManager():
                 {
                     "name": "Fuettern Und Fit",
                     "link": "https://www.fuetternundfit.de/astoral-almazyme.html",
-                    "price": "24,69 €*"
+                    "price": "24,69 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Tiershop",
                     "link": "https://www.tiershop.de/Astoral-Almazyme.html",
-                    "price": "22,23 €*"
+                    "price": "22,23 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Dr. Hölter",
                     "link": "https://www.drhoelter.de/almapharm-astoral-almazyme-hund-katze-nahrungsergaenzung-verdauung-bauchspeicheldruese.html",
-                    "price": "20,16 €*"
+                    "price": "20,16 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Tierarzt24",
                     "link": "https://www.tierarzt24.de/almapharm-astoral-almazyme-hk",
-                    "price": "25,72 €*"
+                    "price": "25,72 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Vetena",
                     "link": "https://www.vetena.de/almapharm-astoral-Almazyme-Hund.html",
-                    "price": "22,45 €*"
+                    "price": "22,45 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Vetmedpro",
                     "link": "https://www.vetmedpro.de/astoralZ-AlmazymeZ-120g-Diaet-Ergaenzungsfuttermittel-fuer-Hunde-und-Katzen",
-                    "price": "21,27 €*"
+                    "price": "21,27 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Petshop Vetline",
                     "link": "https://www.petshop-vetline.de/hunde/ergaenzungsfuttermittel/magen-darm/almapharm-astoral-almazyme-120-g",
-                    "price": "22,64 €*"
+                    "price": "22,64 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Ebay",
-                    "link": "https://www.ebay.de/itm/astoral-Almazyme-120g-Diat-Erganzungsfuttermittel-fur-Hunde-und-Katzen/324480730788?epid=1344526207&hash=item4b8c8f06a4:g:XR4AAOSw2GlgWIIo",
-                    "price": "25,40 €*"
+                    "link": "https://www.ebay.de/itm/astoral-Almazyme-120g-Diat-Erganzungsfuttermittel-fur-Hunde-und-Katzen/324480730788",
+                    "price": "25,40 €*",
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 }
             ]
 
@@ -190,68 +204,91 @@ class DataManager():
                 {
                     "name": "Fuettern Und Fit",
                     "link": "https://www.fuetternundfit.de/astoral-almazyme.html",
-                    "price": get("FUETTERNUNDFITT")
+                    "price": get("FUETTERNUNDFITT"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Tiershop",
                     "link": "https://www.tiershop.de/Astoral-Almazyme.html",
-                    "price": get("TIERSHOP")
+                    "price": get("TIERSHOP"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Dr. Hölter",
                     "link": "https://www.drhoelter.de/almapharm-astoral-almazyme-hund-katze-nahrungsergaenzung-verdauung-bauchspeicheldruese.html",
-                    "price": get("DRHOELTER")
+                    "price": get("DRHOELTER"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Tierarzt24",
                     "link": "https://www.tierarzt24.de/almapharm-astoral-almazyme-hk",
-                    "price": get("TIERARZT24")
+                    "price": get("TIERARZT24"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Vetena",
                     "link": "https://www.vetena.de/almapharm-astoral-Almazyme-Hund.html",
-                    "price": get("VETENA")
+                    "price": get("VETENA"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Vetmedpro",
                     "link": "https://www.vetmedpro.de/astoralZ-AlmazymeZ-120g-Diaet-Ergaenzungsfuttermittel-fuer-Hunde-und-Katzen",
-                    "price": get("VETMEDPRO")
+                    "price": get("VETMEDPRO"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Petshop Vetline",
                     "link": "https://www.petshop-vetline.de/hunde/ergaenzungsfuttermittel/magen-darm/almapharm-astoral-almazyme-120-g",
-                    "price": get("PETSHOP_VETLINE")
+                    "price": get("PETSHOP_VETLINE"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 },
                 {
                     "name": "Ebay",
                     "link": "https://www.ebay.de/itm/astoral-Almazyme-120g-Diat-Erganzungsfuttermittel-fur-Hunde-und-Katzen/324480730788",
-                    "price": get("EBAY")
+                    "price": get("EBAY"),
+                    "updated": datetime.now().strftime('%d.%m.%Y %H:%M')
                 }
             ]
 
-        self.current_prices = prices
-        return prices
-
-    
-    def sorted_prices(self, float=False):
-        # Get current prices
-        prices = self.current_prices
+        # Deep-Copy prices to current float prices
+        current_float_prices = deepcopy(prices)
 
 
-        # Define sort function
-        def sort_by_prices(dic):
-            return price_float(dic["price"])
+        # Convert every price to a float (current_float_prices) (eg "100,00 €" -> 100.0)
+        for dictionary in current_float_prices:
+            dictionary["price"] = price_float(dictionary["price"])
 
 
-        # Sort
-        prices_sorted = sorted(prices, key=sort_by_prices)
-
-        if float:
-            for price in prices_sorted:
-                current = price["price"]
-                price["price"] = price_float(current)
+        # Assign to current_float_prices
+        self.current_float_prices = current_float_prices
 
 
-        return prices_sorted
+        # Save current price
+        self.current_prices = deepcopy(prices)
 
+        # Return either as float or as normal price (X,XX €)
+        if as_float:
+            return self.current_float_prices
+        else:
+            return self.current_prices
+
+
+
+    def sorted_prices(self, as_float):
+        # Get current prices (As €)
+        prices = deepcopy(self.current_prices)
+
+
+        # Get current prices sorted
+        sorted_prices = sorted(prices, key=self.__sort_prices_by_dic)
+
+
+        # Convert to floats if needed
+        if as_float:
+            for dic in sorted_prices:
+                dic["price"] = price_float(dic["price"])
         
+
+        return sorted_prices
+

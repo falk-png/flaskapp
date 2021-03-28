@@ -15,12 +15,9 @@ def index():
 
 @views.route("/overview/", methods=["GET", "POST"])
 def overview():
-    # Get current prices
-    prices = data_mng.current_prices
+    # Get prices
+    prices = data_mng.sorted_prices(as_float=False)
 
-
-    # Sort prices
-    prices = data_mng.sorted_prices(float=False)
 
     return render_template("overview.html", prices=prices)
 
