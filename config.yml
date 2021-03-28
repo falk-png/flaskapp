@@ -1,2 +1,2 @@
-fake_data: False
-debug_mode: False
+fake_data: True
+debug_mode: True

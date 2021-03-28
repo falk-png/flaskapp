@@ -10,14 +10,14 @@
         {% for price in prices %}
         <tr>
             <td>{{ price.get("name") }}</td>
-            <td><a href='{{ price.get("link") }}'>{{ price.get("link") }}</a></td>
+            <td><a href='{{ price.get("link") }}' target="_blank">{{ price.get("link") }}</a></td>
             <td>{{ price.get("price") }}</td>
         </tr>
         {% endfor %}
     </table>
 
-    <form action='{{ url_for("views.download") }}'>
-        <input type="submit" value="Download excel file" />
-    </form>
+    <div class="text-center">
+        <a href='{{ url_for("views.download") }}' class="btn btn-info" role="button">Download excel file</a>
+    </div>
 
 {% endblock %}
