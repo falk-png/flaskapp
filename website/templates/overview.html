@@ -16,4 +16,8 @@
         {% endfor %}
     </table>
 
+    <form action='{{ url_for("views.download") }}'>
+        <input type="submit" value="Download excel file" />
+    </form>
+
 {% endblock %}
