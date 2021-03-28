@@ -1,6 +1,5 @@
-from money_parser import price_str as price_from_raw
 from money import Money
-from babel.numbers import format_currency
+from money_parser import price_str as price_from_raw
 
 
 def price_float(price_raw: str, default="0"):
@@ -20,4 +19,3 @@ def price_eur(price_raw: str, default="0"):
     money = money.format("de_DE", "#,##0.00 ¤")
 
     return money
-    

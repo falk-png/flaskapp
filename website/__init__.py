@@ -1,19 +1,14 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from .views import views, data_mng
-from flask_apscheduler import APScheduler
-from price_tools.DataManager import DataManager
 import yaml
-from time import sleep
+from flask import Flask
+from flask_apscheduler import APScheduler
 from website_tools.ExcelManager import ExcelManager
-from price_tools.tools import price_eur
+from .views import views, data_mng
 
 
 def create_app():
     # Define config variable
     with open("config.yml") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
-
 
     # Create flask app
     app = Flask(__name__)
@@ -23,11 +18,9 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
     app.debug = config["debug_mode"]
 
-
     # Update excel file
     excel_mng = ExcelManager("website/etc_files/prices.xlsx")
     excel_mng.get_xlsx_file(data_mng.sorted_prices(as_float=True))
-
 
     # Configurate scheduler
     scheduler = APScheduler()
@@ -37,25 +30,20 @@ def create_app():
 
     # Schedulers:
 
-
     @scheduler.task('interval', id='update_prices', minutes=60, misfire_grace_time=900)
     def update_prices():
         print("Updating prices.. ", end="")
-
 
         # Define compareable price variables
         old_float_prices = data_mng.current_float_prices
         new_float_prices = data_mng.get_prices(as_float=True)
 
-
         # Get old and new prices
         prices_old = [price["price"] for price in old_float_prices]
         prices_new = [price["price"] for price in new_float_prices]
 
-
         # Check if something changed
         prices_changed = prices_old != prices_new
-
 
         # Print if something changed
         if prices_changed:
@@ -69,6 +57,4 @@ def create_app():
         excel_mng = ExcelManager("website/etc_files/prices.xlsx")
         excel_mng.get_xlsx_file(data_mng.sorted_prices(as_float=True))
 
-
     return app
-

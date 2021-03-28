@@ -1,10 +1,10 @@
-from requests_html import HTMLSession
-from price_tools.tools import price_eur, price_float
-import xlsxwriter
-from xlsxwriter import Workbook
-import yaml
 from copy import deepcopy
 from datetime import datetime
+
+import yaml
+from requests_html import HTMLSession
+
+from price_tools.tools import price_eur, price_float
 
 
 class DataManager():
@@ -12,12 +12,10 @@ class DataManager():
         # Define config variable
         with open("config.yml") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
-        
-        
+
         # Create session
         self.session = HTMLSession()
         self.current_prices = self.get_prices(as_float=False)
-
 
     # Sort prices in dict function (For build in sort function)
     def __sort_prices_by_dic(self, dic):
@@ -40,7 +38,7 @@ class DataManager():
             price = price_eur(price_raw)
 
             return price
-        
+
         elif name == "TIERSHOP":
             # Get website data
             data = session.get("https://www.tiershop.de/Astoral-Almazyme.html")
@@ -51,15 +49,16 @@ class DataManager():
             # Get text from element ("1 Stück: 23,00 €* / Stk..")
             price_raw = price_element.text
             # Get 3rd element to avoid problems
-            price_raw = price_raw.split()[2] 
+            price_raw = price_raw.split()[2]
             # Convert to price
             price = price_eur(price_raw)
 
             return price
-        
+
         elif name == "DRHOELTER":
             # Get website data
-            data = session.get("https://www.drhoelter.de/almapharm-astoral-almazyme-hund-katze-nahrungsergaenzung-verdauung-bauchspeicheldruese.html")
+            data = session.get(
+                "https://www.drhoelter.de/almapharm-astoral-almazyme-hund-katze-nahrungsergaenzung-verdauung-bauchspeicheldruese.html")
             # Convert to HTML
             html_data = data.html
             # Get element
@@ -72,7 +71,7 @@ class DataManager():
             price = price_eur(price_raw)
 
             return price
-        
+
         elif name == "TIERARZT24":
             # Get website data
             data = session.get("https://www.tierarzt24.de/almapharm-astoral-almazyme-hk")
@@ -101,7 +100,8 @@ class DataManager():
             return price
         elif name == "VETMEDPRO":
             # Get website data
-            data = session.get("https://www.vetmedpro.de/astoralZ-AlmazymeZ-120g-Diaet-Ergaenzungsfuttermittel-fuer-Hunde-und-Katzen")
+            data = session.get(
+                "https://www.vetmedpro.de/astoralZ-AlmazymeZ-120g-Diaet-Ergaenzungsfuttermittel-fuer-Hunde-und-Katzen")
             # Convert to HTML
             html_data = data.html
             # Get element
@@ -114,7 +114,8 @@ class DataManager():
             return price
         elif name == "PETSHOP_VETLINE":
             # Get website data
-            data = session.get("https://www.petshop-vetline.de/hunde/ergaenzungsfuttermittel/magen-darm/almapharm-astoral-almazyme-120-g?sPartner=61991")
+            data = session.get(
+                "https://www.petshop-vetline.de/hunde/ergaenzungsfuttermittel/magen-darm/almapharm-astoral-almazyme-120-g?sPartner=61991")
             # Convert to HTML
             html_data = data.html
             # Get element
@@ -127,7 +128,8 @@ class DataManager():
             return price
         elif name == "EBAY":
             # Get website data
-            data = session.get("https://www.ebay.de/itm/astoral-Almazyme-120g-Diat-Erganzungsfuttermittel-fur-Hunde-und-Katzen/324480730788?epid=1344526207&hash=item4b8c8f06a4:g:XR4AAOSw2GlgWIIo")
+            data = session.get(
+                "https://www.ebay.de/itm/astoral-Almazyme-120g-Diat-Erganzungsfuttermittel-fur-Hunde-und-Katzen/324480730788?epid=1344526207&hash=item4b8c8f06a4:g:XR4AAOSw2GlgWIIo")
             # Convert to HTML
             html_data = data.html
             # Get element
@@ -139,11 +141,10 @@ class DataManager():
 
             return price
 
-
     def get_prices(self, as_float):
         config = self.config
         fake_data = config["fake_data"]
-        
+
         if fake_data:
             prices = [
                 {
@@ -254,15 +255,12 @@ class DataManager():
         # Deep-Copy prices to current float prices
         current_float_prices = deepcopy(prices)
 
-
         # Convert every price to a float (current_float_prices) (eg "100,00 €" -> 100.0)
         for dictionary in current_float_prices:
             dictionary["price"] = price_float(dictionary["price"])
 
-
         # Assign to current_float_prices
         self.current_float_prices = current_float_prices
-
 
         # Save current price
         self.current_prices = deepcopy(prices)
@@ -273,22 +271,16 @@ class DataManager():
         else:
             return self.current_prices
 
-
-
     def sorted_prices(self, as_float):
         # Get current prices (As €)
         prices = deepcopy(self.current_prices)
 
-
         # Get current prices sorted
         sorted_prices = sorted(prices, key=self.__sort_prices_by_dic)
-
 
         # Convert to floats if needed
         if as_float:
             for dic in sorted_prices:
                 dic["price"] = price_float(dic["price"])
-        
 
         return sorted_prices
-
